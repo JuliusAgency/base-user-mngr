@@ -1,5 +1,5 @@
 {
-  "name": "@jla/base-user-mngr",
+  "name": "@juliusagency /base-user-mngr",
   "version": "0.0.0-development",
   "description": "A npm package for use in Node.js projects.",
   "exports": {
