@@ -47,3 +47,53 @@ The package is dedicated to be used with the following @juliusagency  packages:
   // Use the authRouter....  
 
 ```
+### API
+```
+  register: 
+   POST:   
+  	 url: https://{uri}/auth/register  
+	 body: {  
+	    "name": "",  
+	    "email": "",  
+	    "password": "",  
+	}  
+   
+  login:  
+   POST:   
+  	 url: https://{uri}/auth/login  
+	 body: {  
+	    "email": "",  
+	    "password": ""  
+	}  
+
+  logout:  
+   GET:   
+  	 url: https://{uri}/auth/login  
+
+  change password:  
+   POST:   
+  	url: https://{uri}/auth/logout  
+  change password:  
+  	url: https://{uri}/auth/change-password  
+	body: {  
+	    "email":"",  
+	    "password":"",  
+	    "passwordNew":""  
+	}  
+  
+  reset password request:  
+   POST:   
+   	url: https://{uri}/auth/reset-password-request  
+   	body: {  
+	    "email": ""  
+	}  
+  
+  reset password:  
+   POST:   
+   	url: https://{uri}/auth/reset-password  
+   	body: {  
+	    "user": "",  
+	    "token": "",  
+	    "password": ""  
+	}  
+```
