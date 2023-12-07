@@ -18,16 +18,19 @@ export const setupAuthController = (options: AuthMngrOPtions) => {
         req.logIn(user, { session: options.session }, async (error) => {
           if (error) return next(error);
           const { email } = req.body;
-          let session = { email: email, };
+          let session = { 
+            email: email, 
+            role: undefined,
+          };
           // for future authorization usage
           if (user.role) {
-            session['role'] = user.role;
+            session.role = user.role;
           };
           if (!options.session) {
             session = options.encode(session);
             // for front usage
             if (user.role) {
-              session['role'] = user.role;
+              session.role = user.role;
             };
           };
           return res.send(session);
