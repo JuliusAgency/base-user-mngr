@@ -2,13 +2,10 @@
 import { Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 
-import { setupAuthService } from './service';
 import { AuthMngrOPtions } from './types';
 
-export const setupAuthController = (options: AuthMngrOPtions) => {
-  const srv = setupAuthService(options);
+export const setupAuthController = (options: AuthMngrOPtions, service: any) => {
 
-  const { emailer } = options;
   const login = (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate(
       'local-login',
@@ -67,7 +64,7 @@ export const setupAuthController = (options: AuthMngrOPtions) => {
   const changePassword = async (req: Request, res: Response) => {
     const { email, password, passwordNew } = req.body;
     try {
-      const emailParams = await srv.changePassword(
+      const emailParams = await service.changePassword(
         email,
         password,
         passwordNew,
@@ -81,7 +78,7 @@ export const setupAuthController = (options: AuthMngrOPtions) => {
   const resetPasswordRequest = async (req: Request, res: Response) => {
     const { email } = req.body;
     try {
-      const emailParams = await srv.resetPasswordRequest(email);
+      const emailParams = await service.resetPasswordRequest(email);
       await sendEmail("resetPasswordRequest", emailParams);
       return res.status(200).send({ params: emailParams, success: true });
     } catch (error: Error | any) {
@@ -92,7 +89,7 @@ export const setupAuthController = (options: AuthMngrOPtions) => {
   const resetPassword = async (req: Request, res: Response) => {
     const { user, token, password } = req.body;
     try {
-      const emailParams = await srv.resetPassword(user, token, password);
+      const emailParams = await service.resetPassword(user, token, password);
       await sendEmail("resetPassword", emailParams);
       return res.status(200).send({ params: emailParams, success: true });
     } catch (error: Error | any) {
@@ -101,6 +98,7 @@ export const setupAuthController = (options: AuthMngrOPtions) => {
   };
 
   const sendEmail = async (name: string, params: any): Promise<void> => {
+    const { emailer } = options;
     if (emailer != undefined) {
       const emailOptions = emailer.buildEmail(name, params);
       await emailer.sendEmail(emailOptions);

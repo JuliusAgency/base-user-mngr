@@ -4,9 +4,9 @@ import { AuthMngrOPtions } from "./types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const setupAuthService = (options: AuthMngrOPtions) => {
+  const {User, Token} = options;
   const crypt = cryptUtils();
-  const { User, Token } = options;
-
+  
   const changePassword = async (
     email: string,
     password: string,
