@@ -1,12 +1,12 @@
-import crypto from "node:crypto";
+import crypto from 'node:crypto';
 import { cryptUtils } from './utils';
-import { AuthMngrOPtions } from "./types";
+import { AuthMngrOPtions } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const setupAuthService = (options: AuthMngrOPtions) => {
-  const {User, Token} = options;
+  const { User, Token } = options;
   const crypt = cryptUtils();
-  
+
   const changePassword = async (
     email: string,
     password: string,
@@ -22,11 +22,7 @@ export const setupAuthService = (options: AuthMngrOPtions) => {
 
     // Change password
     const hash = await crypt.hash(passwordNew);
-    await User.findOneAndUpdate(
-      { email },
-      { password: hash },
-      { new: true },
-    );
+    await User.findOneAndUpdate({ email }, { password: hash }, { new: true });
 
     const changeParams = {
       email: user.email,
@@ -38,13 +34,14 @@ export const setupAuthService = (options: AuthMngrOPtions) => {
   const resetPasswordRequest = async (email: string) => {
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) throw new Error("the user doesn't exists");
-    const resetToken = await createAndStoreResetPasswordToken(user._id);
+    const pkn = User.getPrimaryKeyName();
+    const resetToken = await createAndStoreResetPasswordToken(user[pkn]);
 
     const resetRequestParams = {
       name: String(user?.name),
       email: String(user?.email),
       token: resetToken,
-      id: user._id,
+      id: user[pkn],
     };
     return resetRequestParams;
   };
@@ -53,10 +50,10 @@ export const setupAuthService = (options: AuthMngrOPtions) => {
     // create new reset token
     const token = await Token.findOne({ user: id });
     if (token) await Token.deleteOne(token);
-    const resetPasswordToken = crypto.randomBytes(32).toString("hex");
+    const resetPasswordToken = crypto.randomBytes(32).toString('hex');
     const hash = await crypt.hash(resetPasswordToken);
 
-    // save the token 
+    // save the token
     await Token.save({
       user: id,
       token: hash,
@@ -69,10 +66,11 @@ export const setupAuthService = (options: AuthMngrOPtions) => {
   const resetPassword = async (id: string, token: string, password: string) => {
     const passwordResetToken = await validateResetToken(id, token);
     const hash = await crypt.hash(password);
+    const pkn = User.getPrimaryKeyName();
     await User.findOneAndUpdate(
-      { _id: id },
+      { [pkn]: id },
       { password: hash },
-      { new: true }
+      { new: true },
     );
 
     await Token.deleteOne(passwordResetToken);
@@ -87,17 +85,17 @@ export const setupAuthService = (options: AuthMngrOPtions) => {
   const validateResetToken = async (id: string, token: string) => {
     const passwordResetToken = await Token.findOne({ user: id });
     if (!passwordResetToken) {
-      throw new Error("Invalid or expired password reset token");
+      throw new Error('Invalid or expired password reset token');
     }
     const isValid = await crypt.compare(token, passwordResetToken.token);
     if (!isValid) {
-      throw new Error("Invalid or expired password reset token");
+      throw new Error('Invalid or expired password reset token');
     }
     const dateNow = Date.now();
     const tokenDate = passwordResetToken.createdAt.getTime();
-    const expired = (dateNow - tokenDate) > passwordResetToken.expiresSec * 1000;
+    const expired = dateNow - tokenDate > passwordResetToken.expiresSec * 1000;
     if (expired) {
-      throw new Error("Invalid or expired password reset token");
+      throw new Error('Invalid or expired password reset token');
     }
     return passwordResetToken;
   };

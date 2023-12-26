@@ -12,9 +12,9 @@ export const setupAuthRouter = (controller: any) => {
   router.get('/logout', controller.logout);
   router.post('/register', controller.register);
   router.post('/change-password', controller.changePassword);
-  
-  router.post("/reset-password-request", controller.resetPasswordRequest);
-  router.post("/reset-password", controller.resetPassword);  
+
+  router.post('/reset-password-request', controller.resetPasswordRequest);
+  router.post('/reset-password', controller.resetPassword);
 
   return router;
 };

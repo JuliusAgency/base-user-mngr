@@ -5,7 +5,6 @@ import passport from 'passport';
 import { AuthMngrOPtions } from './types';
 
 export const setupAuthController = (options: AuthMngrOPtions, service: any) => {
-
   const login = (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate(
       'local-login',
@@ -15,21 +14,21 @@ export const setupAuthController = (options: AuthMngrOPtions, service: any) => {
         req.logIn(user, { session: options.session }, async (error) => {
           if (error) return next(error);
           const { email } = req.body;
-          let session = { 
-            email: email, 
+          let session = {
+            email: email,
             role: undefined,
           };
           // for future authorization usage
           if (user.role) {
             session.role = user.role;
-          };
+          }
           if (!options.session) {
             session = options.encode(session);
             // for front usage
             if (user.role) {
               session.role = user.role;
-            };
-          };
+            }
+          }
           return res.send(session);
         });
       },
@@ -79,7 +78,7 @@ export const setupAuthController = (options: AuthMngrOPtions, service: any) => {
     const { email } = req.body;
     try {
       const emailParams = await service.resetPasswordRequest(email);
-      await sendEmail("resetPasswordRequest", emailParams);
+      await sendEmail('resetPasswordRequest', emailParams);
       return res.status(200).send({ params: emailParams, success: true });
     } catch (error: Error | any) {
       return res.status(500).json({ message: error.message });
@@ -90,7 +89,7 @@ export const setupAuthController = (options: AuthMngrOPtions, service: any) => {
     const { user, token, password } = req.body;
     try {
       const emailParams = await service.resetPassword(user, token, password);
-      await sendEmail("resetPassword", emailParams);
+      await sendEmail('resetPassword', emailParams);
       return res.status(200).send({ params: emailParams, success: true });
     } catch (error: Error | any) {
       return res.status(500).json({ message: error.message });
@@ -102,7 +101,7 @@ export const setupAuthController = (options: AuthMngrOPtions, service: any) => {
     if (emailer != undefined) {
       const emailOptions = emailer.buildEmail(name, params);
       await emailer.sendEmail(emailOptions);
-    };
+    }
   };
 
   return {
