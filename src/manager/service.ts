@@ -74,7 +74,7 @@ export const setupAuthService = (options: AuthMngrOPtions) => {
     );
 
     await Token.deleteOne(passwordResetToken);
-    const user = await User.findById({ id });
+    const user = await User.findById({ [pkn]: id });
     const resetParams = {
       email: String(user?.email),
       name: String(user?.name),
