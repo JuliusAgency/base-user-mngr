@@ -14,6 +14,22 @@ export const setupAuthController = (options: AuthMngrOPtions, service: any) => {
         req.logIn(user, { session: options.session }, async (error) => {
           if (error) return next(error);
           user.password = '[encoded password]';
+          const { email } = req.body;
+          let retData = {
+            email: email,
+            role: undefined,
+            user: undefined,
+          };
+          // for future authorization usage
+          if (user.role) {
+            retData.role = user.role;
+          }
+          if (!options.session) {
+            retData = options.encode(retData);
+            // for front usage
+            retData.user = user;
+            return res.send(retData);
+          }
           return res.send(user);
         });
       },
@@ -33,9 +49,12 @@ export const setupAuthController = (options: AuthMngrOPtions, service: any) => {
     passport.authenticate(
       'local-register',
       (error: Error, user: any, info: any) => {
-        if (error) return next(error);
-        if (!user) return res.send(info);
-
+        if (error) {
+          return next(error);
+        }
+        if (!user) {
+          return res.send(info);
+        }
         user.password = '[encoded password]';
         return res.send(user);
       },
